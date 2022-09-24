@@ -1,7 +1,7 @@
 #include <iostream>
 struct vec3
 {
-    float x, y, z;
+    float x, y, z; //Пробуем гит
 };
 struct Ray
 {
