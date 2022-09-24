@@ -15,10 +15,7 @@ struct Plane
 };
 
 float dot(vec3 a, vec3 b){
-    return
-        a.x * b.x +
-        a.y * b.y +
-        a.z * b.z;
+    return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 vec3 rayPlaneIntersection(Ray ray, Plane plane){
     float a = dot(plane.point, plane.norm);
