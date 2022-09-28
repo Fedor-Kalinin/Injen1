@@ -1,11 +1,11 @@
 #include <iostream>
 struct vec3
 {
-    float x, y, z; //Пробуем гит
+    float x, y, z; 
 };
 struct Ray
 {
-    vec3 origin;
+    vec3 origin; //Пробуем гит еще раз
     vec3 direction;
 };
 struct Plane
