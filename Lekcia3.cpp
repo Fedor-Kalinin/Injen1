@@ -5,7 +5,7 @@ struct vec3
 };
 struct Ray
 {
-    vec3 origin; //Пробуем гит еще раз
+    vec3 origin; //Пробуем гит еще раз на второй ветке
     vec3 direction;
 };
 struct Plane
