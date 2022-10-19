@@ -1,0 +1,69 @@
+import RPi.GPIO as gp
+import time as t
+from matplotlib import pyplot as plt
+
+gp.cleanup()
+dac = [26, 19, 13, 6, 5, 11, 9, 10]
+leds = [21, 20, 16, 12, 7, 8, 25, 24]
+comp = 4
+troyka = 17
+gp.setmode(gp.BCM)
+gp.setup(dac, gp.OUT)
+gp.setup(leds, gp.OUT)
+gp.setup(comp, gp.IN)
+
+def dec2bin(value):
+    return [int(el) for el in bin(value)[2:].zfill(8)]
+
+def adc():
+    for i in range(256):
+        gp.output(dac, dec2bin(i))
+        t.sleep(0.0007)
+        compValue = gp.input(comp)
+        if compValue == 0:
+            return i
+
+try:
+    measuredData = []
+    gp.setup(troyka, gp.OUT, initial = gp.HIGH)
+    TimeStart = t.time()
+    while (adc() < 252):
+        k = adc()        
+        measuredData.append(k)
+        gp.output(leds, dec2bin(k))
+    TimeEnd = t.time()
+    TimeUp = TimeEnd - TimeStart
+    gp.setup(troyka, gp.OUT, initial = gp.LOW)
+    TimeStart = t.time()
+    while (adc() > 12):
+        k = adc()
+        measuredData.append(k)
+        gp.output(leds, dec2bin(k))
+    TimeEnd = t.time()
+    TimeDown = TimeEnd - TimeStart
+
+finally:
+    gp.output(dac, gp.LOW)
+    gp.output(leds, gp.LOW)
+    gp.cleanup(dac)
+
+    X = [ i+1 for i in range(len(measuredData))] 
+    # [item * (TimeUp + TimeDown) / len(measuredData) for item in range(len(measuredData))]
+    Y = [3.3 * item / 255 for item in measuredData]
+
+    plt.scatter(X, Y, s = 1)
+
+    plt.show()
+
+    measuredDataStr = [str(item) for item in measuredData]
+    with open("data.txt", "w") as outfile:
+       for t in measuredDataStr:
+            outfile.write(t)
+            outfile.write("\n")
+        #outfile.write("\n".join(measuredDataStr))
+
+    frequency = len(measuredData) / (TimeUp + TimeDown)
+    step = 3.3 / 255
+
+    with open("settings.txt", "w") as outfile:
+        outfile.write(str(frequency) + "\n" + str(step))
